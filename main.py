@@ -17,7 +17,7 @@ class Integral_value:
     def __init__(self, a , b) -> None:
         self.begin_value = a
         self.end_value = b
-        self.funs_links = [self.Middle_Triangles]
+        self.funs_links = [self.Middle_Triangles , self.Trapetion, self.Simpson_method]
         self.execute_code()
 
     def integrated_function(self, x):
@@ -37,7 +37,26 @@ class Integral_value:
     
     # Метод трапеций
     def Trapetion(self, n):
-        pass
+        h = (self.end_value - self.begin_value)/n 
+        s = h*(self.integrated_function(self.begin_value) + self.integrated_function(self.end_value))/ 2
+        for i in range(1, n -1):
+            s = s + h * self.integrated_function(self.begin_value + i * h)
+
+        return s 
+    
+    # Метод Симпсона
+    def Simpson_method(self, n):
+        h = (self.end_value - self.begin_value) / (2 * n)
+        s1 = 0
+        s2 = 0
+        for i in range(1 , n):
+            x1 = self.begin_value + (2*i - 1) * h
+            s1 = s1 + self.integrated_function(x1)
+            x2 = x1 + h 
+            s2 = s2 + self.integrated_function(x2)
+        s = h/3*(self.integrated_function(self.begin_value) + 4* s1 + 2 * s2 - self.integrated_function(self.end_value))
+        return s
+
     
 
 
@@ -46,10 +65,11 @@ class Integral_value:
         self.analytics_value = self.Analytics_method()
         print(f"Аналитическое значение интеграла : {round(self.analytics_value, 4)}")
         for main_index in range(len(self.funs_links)):
+            print ("-" * 40)
             for index in range(len(INTERVALS_COUNT)):
                 mt_integral_value = self.funs_links[main_index](INTERVALS_COUNT[index])
-                accuracy = abs(mt_integral_value - self.analytics_value)
-                print (f"Метод {METHODS_NAMES[main_index]} при n = {INTERVALS_COUNT[index]} :  {mt_integral_value} Точность : {accuracy} ")
+                accuracy = abs(self.analytics_value - mt_integral_value)
+                print (f"Метод {METHODS_NAMES[main_index]} при n = {INTERVALS_COUNT[index]} :  {mt_integral_value} Точность : {round(accuracy,4)} ")
 
 
 if __name__ == "__main__":
